@@ -1,13 +1,13 @@
 <template>
-  <div :style="{ cursor, userSelect}" class="vue-splitter-container clearfix" @mouseup="onMouseUp" @mousemove="onMouseMove">
+  <div :style="{ cursor, userSelect}" class="vue-splitter-container clearfix" @mouseup="onMouseUp" @mousemove="onMouseMove" ref="JconBox">
 
-    <pane class="splitter-pane splitter-paneL" :split="split" :style="{ [type]: percent+'%'}">
+    <pane class="splitter-pane splitter-paneL" :split="split" :style="{ [type]: width? width + 'px' :  (percent+'%')}">
       <slot name="paneL"></slot>
     </pane>
 
-    <resizer :className="className" :style="{ [resizeType]: percent+'%'}" :split="split" @mousedown.native="onMouseDown" @click.native="onClick"></resizer>
+    <resizer :className="className" :style="{ [resizeType]:width? width +'px' : percent+'%'}" :split="split" @mousedown.native="onMouseDown" @click.native="onClick"></resizer>
 
-    <pane class="splitter-pane splitter-paneR" :split="split" :style="{ [type]: 100-percent+'%'}">
+    <pane class="splitter-pane splitter-paneR" :split="split" :style="{ [type]: width? conBoxActualWidth - width +'px'  :(100-percent+'%')}">
       <slot name="paneR"></slot>
     </pane>
     <div class="vue-splitter-container-mask" v-if="active"></div>
@@ -22,6 +22,15 @@
     name: 'splitPane',
     components: { Resizer, Pane },
     props: {
+      initWidth :{ // 如果传了这个值,那么 左右splitter-pane的宽度都用px来计算
+        type: Number,
+        default: 0,
+        required: false
+      },
+      minWidth:{
+        type: Number,
+        default: 300
+      },
       minPercent: {
         type: Number,
         default: 10
@@ -34,7 +43,8 @@
         validator(value) {
           return ['vertical', 'horizontal'].indexOf(value) >= 0
         },
-        required: true
+        // required: false,
+        default:'vertical'
       },
       className: String
     },
@@ -49,6 +59,10 @@
     watch: {
       defaultPercent(newValue,oldValue){
         this.percent = newValue
+      },
+      initWidth(newValue,oldValue){
+        this.width = newValue
+        console.log(`this.width`, this.width);
       }
     },
     data() {
@@ -58,7 +72,9 @@
         height: null,
         percent: this.defaultPercent,
         type: this.split === 'vertical' ? 'width' : 'height',
-        resizeType: this.split === 'vertical' ? 'left' : 'top'
+        resizeType: this.split === 'vertical' ? 'left' : 'top',
+        width: this.initWidth,
+        conBoxActualWidth:0,
       }
     },
     methods: {
@@ -97,16 +113,29 @@
 
           const currentPage = this.split === 'vertical' ? e.pageX : e.pageY
           const targetOffset = this.split === 'vertical' ? e.currentTarget.offsetWidth : e.currentTarget.offsetHeight
-          const percent = Math.floor(((currentPage - offset) / targetOffset) * 10000) / 100
+          const width = currentPage - offset
 
-          if (percent > this.minPercent && percent < 100 - this.minPercent) {
-            this.percent = percent
+          if (this.initWidth) {
+            if (width > this.minWidth && width < targetOffset - this.minWidth) {
+              this.width = width
+            }
+            this.$emit('resize', this.width)
+          }else{
+            const percent = Math.floor((width / targetOffset) * 10000) / 100
+
+            if (percent > this.minPercent && percent < 100 - this.minPercent) {
+              this.percent = percent
+            }
+
+            this.$emit('resize', this.percent)
           }
-
-          this.$emit('resize', this.percent)
           this.hasMoved = true
         }
       }
+    },
+    mounted(){
+      let box = this.$refs.JconBox.getBoundingClientRect()
+      this.conBoxActualWidth = box.width
     }
   }
 </script>
