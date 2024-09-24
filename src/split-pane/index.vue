@@ -1,15 +1,17 @@
 <template>
   <div :style="{ cursor, userSelect}" class="vue-splitter-container clearfix" @mouseup="onMouseUp" @mousemove="onMouseMove" ref="JconBox">
+    <div class="vue-splitter-flex-box">
+      <pane class="splitter-pane splitter-paneL" :split="split" :style="{ [type]: width? width + 'px' :  (percent+'%')}">
+        <slot name="paneL"></slot>
+      </pane>
 
-    <pane class="splitter-pane splitter-paneL" :split="split" :style="{ [type]: width? width + 'px' :  (percent+'%')}">
-      <slot name="paneL"></slot>
-    </pane>
+      <!-- <pane class="splitter-pane splitter-paneR" :split="split" :style="{ [type]: width? conBoxActualWidth - width +'px'  :(100-percent+'%')}"> -->
+      <pane class="splitter-pane splitter-paneR" :split="split" :style="{ [type]: width? 'auto'  :(100-percent+'%')}" >
+        <slot name="paneR"></slot>
+      </pane>
+    </div>
 
     <resizer :className="className" :style="{ [resizeType]:width? width +'px' : percent+'%'}" :split="split" @mousedown.native="onMouseDown" @click.native="onClick"></resizer>
-
-    <pane class="splitter-pane splitter-paneR" :split="split" :style="{ [type]: width? conBoxActualWidth - width +'px'  :(100-percent+'%')}">
-      <slot name="paneR"></slot>
-    </pane>
     <div class="vue-splitter-container-mask" v-if="active"></div>
   </div>
 </template>
@@ -73,8 +75,8 @@
         type: this.split === 'vertical' ? 'width' : 'height',
         resizeType: this.split === 'vertical' ? 'left' : 'top',
         width: this.initWidth,
-        conBoxActualWidth:0,
-        debounceTimer: null
+        // conBoxActualWidth:0,
+        // debounceTimer: null
       }
     },
     methods: {
@@ -132,19 +134,19 @@
           this.hasMoved = true
         }
       },
-      updateConBoxWidth(){
-        let box = this.$refs.JconBox.getBoundingClientRect()
-        this.conBoxActualWidth = box.width
-      }
+      // updateConBoxWidth(){
+      //   let box = this.$refs.JconBox.getBoundingClientRect()
+      //   this.conBoxActualWidth = box.width
+      // }
     },
     mounted(){
-      this.updateConBoxWidth()
-      window.addEventListener('resize', () => {
-        clearTimeout(this.debounceTimer);
-        this.debounceTimer = setTimeout(() => {
-          this.updateConBoxWidth();
-        }, 200);
-      });
+      // this.updateConBoxWidth()
+      // window.addEventListener('resize', () => {
+      //   clearTimeout(this.debounceTimer);
+      //   this.debounceTimer = setTimeout(() => {
+      //     this.updateConBoxWidth();
+      //   }, 100);
+      // });
     }
   }
 </script>
@@ -159,9 +161,15 @@
   height: 0;
 }
 
+
 .vue-splitter-container {
   height: 100%;
   position: relative;
+}
+
+.vue-splitter-flex-box{
+  display: flex;
+  height:100%;
 }
 
 .vue-splitter-container-mask {

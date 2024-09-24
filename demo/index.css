@@ -1,11 +1,11 @@
-.left-container {
+.splitter-paneL {
   background-color: #F38181;
-  height: 100%;
+  /* height: 100%; */
 }
 
-.right-container {
+.splitter-paneR {
   background-color: #FCE38A;
-  height: 200px;
+  /* height: 200px; */
 }
 
 .top-container {

@@ -22,17 +22,18 @@
 
 <style scoped>
 .splitter-pane.vertical.splitter-paneL {
-  position: absolute;
-  left: 0px;
+  /* position: absolute; */
+  /* left: 0px; */
   height: 100%;
   /* padding-right: 3px; */
 }
 
 .splitter-pane.vertical.splitter-paneR {
-  position: absolute;
-  right: 0px;
+  /* position: absolute; */
+  /* right: 0px; */
   height: 100%;
   /* padding-left: 3px; */
+  flex-grow: 1;
 }
 
 .splitter-pane.horizontal.splitter-paneL {
