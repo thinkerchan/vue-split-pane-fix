@@ -62,7 +62,6 @@
       },
       initWidth(newValue,oldValue){
         this.width = newValue
-        console.log(`this.width`, this.width);
       }
     },
     data() {
@@ -75,6 +74,7 @@
         resizeType: this.split === 'vertical' ? 'left' : 'top',
         width: this.initWidth,
         conBoxActualWidth:0,
+        debounceTimer: null
       }
     },
     methods: {
@@ -131,11 +131,20 @@
           }
           this.hasMoved = true
         }
+      },
+      updateConBoxWidth(){
+        let box = this.$refs.JconBox.getBoundingClientRect()
+        this.conBoxActualWidth = box.width
       }
     },
     mounted(){
-      let box = this.$refs.JconBox.getBoundingClientRect()
-      this.conBoxActualWidth = box.width
+      this.updateConBoxWidth()
+      window.addEventListener('resize', () => {
+        clearTimeout(this.debounceTimer);
+        this.debounceTimer = setTimeout(() => {
+          this.updateConBoxWidth();
+        }, 200);
+      });
     }
   }
 </script>
