@@ -2,7 +2,7 @@
 > base on https://github.com/PanJiaChen/vue-split-pane/tree/master
 
 
-### [try demo](http://thinkerchan.github.io/vue-splitpane-fix/demo/index.html)
+### try on  http://thinkerchan.github.io/vue-split-pane-fix/demo/index.html
 
 ### How to use?
 ```bash
