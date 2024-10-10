@@ -1,6 +1,9 @@
 # vue-splitpane-fix
 > base on https://github.com/PanJiaChen/vue-split-pane/tree/master
 
+### features
+1. use flex layout to replace float layout
+2. add `default-px` and `min-px`
 
 ### try on  http://thinkerchan.github.io/vue-split-pane-fix/demo/index.html
 
