@@ -1,56 +1,28 @@
-# Vue Split Pane
+# vue-splitpane-fix
+> base on https://github.com/PanJiaChen/vue-split-pane/tree/master
 
-Split-Pane component built with vue2.0, can be split vertically or horizontally.
 
-## [Try the demo](http://panjiachen.github.io/split-pane/demo/index.html)
+### [try demo](http://thinkerchan.github.io/vue-splitpane-fix/demo/index.html)
 
 ### How to use?
 ```bash
-npm install vue-splitpane
+npm install vue-splitpane-fix
 
 #import
-import splitPane from 'vue-splitpane'
+import splitPane from 'vue-splitpane-fix'
 
 # use as global component
 Vue.component('split-pane', splitPane);
 ```
 
-### Example
-
-```html
-   <split-pane v-on:resize="resize" :min-percent='20' :default-percent='30' split="vertical">
-      <template slot="paneL">
-        A
-      </template>
-      <template slot="paneR">
-        B
-      </template>
-    </split-pane>
-```
-
-```html
-  //nested
-   <split-pane v-on:resize="resize" :min-percent='20' :default-percent='30' split="vertical">
-      <template slot="paneL">
-        A
-      </template>
-      <template slot="paneR">
-        <split-pane split="horizontal">
-          <template slot="paneL">
-           B
-          </template>
-          <template slot="paneR">
-            C
-          </template>
-        </split-pane>
-      </template>
-    </split-pane>
-```
 
 ### Options
 |    Property    |    Description   |   type   |	default	|
 | -----------------  | ---------------- | :--------: | :----------: |
 | split       | the split type |String [horizontal,vertical] |must choose one type |
+| default-percent         | paneL default-percent  |Number | 50 |
 | min-percent         | paneL max-min-percent  |Number | 10 |
-| max-percent         | paneL max-percent  |Number | 10 |
+| default-px         | paneL default-px  |Number | 0 |
+| min-px         | paneL min-px  |Number | 300 |
 
+> if you set `default-px` with a non-zero value, `default-percent` will not work

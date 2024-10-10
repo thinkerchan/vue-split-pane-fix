@@ -1,17 +1,17 @@
 <template>
-  <div :style="{ cursor, userSelect}" class="vue-splitter-container clearfix" @mouseup="onMouseUp" @mousemove="onMouseMove" ref="JconBox">
-    <div class="vue-splitter-flex-box">
-      <pane class="splitter-pane splitter-paneL" :split="split" :style="{ [type]: width? width + 'px' :  (percent+'%')}">
+  <div :style="{ cursor, userSelect}" class="vue-splitter-container" @mouseup="onMouseUp" @mousemove="onMouseMove">
+    <div class="vue-splitter-flex-box" :split="split" :class="split">
+      <pane class="splitter-pane splitter-paneL" :style="{ [type]: width? width + 'px' :  (percent+'%')}">
         <slot name="paneL"></slot>
       </pane>
 
-      <!-- <pane class="splitter-pane splitter-paneR" :split="split" :style="{ [type]: width? conBoxActualWidth - width +'px'  :(100-percent+'%')}"> -->
-      <pane class="splitter-pane splitter-paneR" :split="split" :style="{ [type]: width? 'auto'  :(100-percent+'%')}" >
+      <pane class="splitter-pane splitter-paneR" :style="{ [type]: width? 'calc(100% - ' + width + 'px)'  :(100-percent+'%')}" >
         <slot name="paneR"></slot>
       </pane>
     </div>
 
     <resizer :className="className" :style="{ [resizeType]:width? width +'px' : percent+'%'}" :split="split" @mousedown.native="onMouseDown" @click.native="onClick"></resizer>
+
     <div class="vue-splitter-container-mask" v-if="active"></div>
   </div>
 </template>
@@ -24,12 +24,12 @@
     name: 'splitPane',
     components: { Resizer, Pane },
     props: {
-      initWidth :{ // 如果传了这个值,那么 左右splitter-pane的宽度都用px来计算
+      defaultPx :{
         type: Number,
         default: 0,
         required: false
       },
-      minWidth:{
+      minPx:{
         type: Number,
         default: 300
       },
@@ -45,7 +45,6 @@
         validator(value) {
           return ['vertical', 'horizontal'].indexOf(value) >= 0
         },
-        // required: false,
         default:'vertical'
       },
       className: String
@@ -62,7 +61,7 @@
       defaultPercent(newValue,oldValue){
         this.percent = newValue
       },
-      initWidth(newValue,oldValue){
+      defaultPx(newValue,oldValue){
         this.width = newValue
       }
     },
@@ -74,9 +73,7 @@
         percent: this.defaultPercent,
         type: this.split === 'vertical' ? 'width' : 'height',
         resizeType: this.split === 'vertical' ? 'left' : 'top',
-        width: this.initWidth,
-        // conBoxActualWidth:0,
-        // debounceTimer: null
+        width: this.defaultPx,
       }
     },
     methods: {
@@ -117,51 +114,26 @@
           const targetOffset = this.split === 'vertical' ? e.currentTarget.offsetWidth : e.currentTarget.offsetHeight
           const width = currentPage - offset
 
-          if (this.initWidth) {
-            if (width > this.minWidth && width < targetOffset - this.minWidth) {
+          if (this.defaultPx) {
+            if (width > this.minPx && width < targetOffset - this.minPx) {
               this.width = width
             }
             this.$emit('resize', this.width)
           }else{
             const percent = Math.floor((width / targetOffset) * 10000) / 100
-
             if (percent > this.minPercent && percent < 100 - this.minPercent) {
               this.percent = percent
             }
-
             this.$emit('resize', this.percent)
           }
           this.hasMoved = true
         }
-      },
-      // updateConBoxWidth(){
-      //   let box = this.$refs.JconBox.getBoundingClientRect()
-      //   this.conBoxActualWidth = box.width
-      // }
-    },
-    mounted(){
-      // this.updateConBoxWidth()
-      // window.addEventListener('resize', () => {
-      //   clearTimeout(this.debounceTimer);
-      //   this.debounceTimer = setTimeout(() => {
-      //     this.updateConBoxWidth();
-      //   }, 100);
-      // });
+      }
     }
   }
 </script>
 
 <style scoped>
-.clearfix:after {
-  visibility: hidden;
-  display: block;
-  font-size: 0;
-  content: " ";
-  clear: both;
-  height: 0;
-}
-
-
 .vue-splitter-container {
   height: 100%;
   position: relative;
@@ -169,7 +141,12 @@
 
 .vue-splitter-flex-box{
   display: flex;
-  height:100%;
+  height:inherit;
+  width:inherit;
+}
+
+.vue-splitter-flex-box.horizontal{
+  flex-direction: column ;
 }
 
 .vue-splitter-container-mask {
